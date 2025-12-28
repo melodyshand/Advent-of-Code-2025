@@ -5,8 +5,8 @@ from sympy import *
 # leading zeroes = valid
 
 # open, read all lines one at a time
-with open("/Users/melody.shand/Documents/MS/Python/repos/Advent-of-Code-2025/day2_input.txt", "r") as file:
-    # with open("/Users/melody.shand/Documents/MS/Python/repos/Advent-of-Code-2025/day2_input_sample.txt", "r") as file:
+# with open("/Users/melody.shand/Documents/MS/Python/repos/Advent-of-Code-2025/day2_input.txt", "r") as file:
+with open("/Users/melody.shand/Documents/MS/Python/repos/Advent-of-Code-2025/day2_input_sample.txt", "r") as file:
     formatted = file.readlines()[0].split(",")
 
 # 11-22 has two invalid IDs, 11 and 22.
@@ -64,29 +64,59 @@ array_test = []
 
 # something wrong here
 
+# 2 digits: 2
+# 3 digits: 3
+# 4 digits: 4 and 2
+# 5 digits: 5
+# 6 digits: 6, 3, 2
+# 7 digits 7
+# 8 digits: 8, 4, 2
+# 9 digits: 9, 3
+# 10 digits: 10, 5, 2
+
 
 def find_chonk_size(number):
-    if len(number) % 5 == 0:
+    if len(number) % 10 == 0:
+        return "Divisible by 10, 5, 2"
+    elif len(number) % 9 == 0:
+        return "Divisible by 9, 3"
+    elif len(number) % 8 == 0:
+        return "Divisible by 8, 4, 2"
+    elif len(number) % 7 == 0:
+        return "Divisible by 7"
+    elif len(number) % 6 == 0:
+        return "Divisible by 6, 3"
+    elif len(number) % 5 == 0:
         return "Divisible by 5"
-    if len(number) % 4 == 0:
-        return "Divisible by 4"
-    if len(number) % 3 == 0:
+    elif len(number) % 4 == 0:
+        return "Divisible by 4, 2"
+    elif len(number) % 3 == 0:
         return "Divisible by 3"
-    if len(number) % 2 == 0:
+    elif len(number) % 2 == 0:
         return "Divisible by 2"
 
 
+# ****************
 def repeats_in_chonks(currentId, chonk_size):
-    chonk = int(len(str(currentId))/chonk_size)
-    if str(currentId)[0:chonk] == str(currentId)[chonk:]:
-        return int(currentId)
-    else:
-        return 0
+    validIds = []
+    for divisor in chonk_size:
+        chonk = int(len(str(currentId))/divisor)
+        if str(currentId)[0:chonk] == str(currentId)[chonk:]:
+            validIds.append(int(currentId))
+    return validIds
+
+
+def incrementValidIds(arrayOfIds):
+    sumOfIds = 0
+    if not arrayOfIds == None and not len(arrayOfIds) == 0:
+        for id in arrayOfIds:
+            sumOfIds += id
+    return sumOfIds
 
 
 def find_repeat_chonks(formatted_data):
     i = 0
-    repeats = 0
+    part2repeats = 0
     while i < len(formatted_data):
         range = formatted_data[i].split("-")
         start = range[0]
@@ -96,19 +126,38 @@ def find_repeat_chonks(formatted_data):
 
         # loop through each value and determine chonks
         while currentId <= int(end):
-            if find_chonk_size(str(currentId)) == "Divisible by 2":
-                repeats = repeats + repeats_in_chonks(currentId, 2)
-            elif find_chonk_size(str(currentId)) == "Divisible by 3":
-                repeats = repeats + repeats_in_chonks(currentId, 3)
-            elif find_chonk_size(str(currentId)) == "Divisible by 4":
-                repeats = repeats + repeats_in_chonks(currentId, 4)
+            if find_chonk_size(str(currentId)) == "Divisible by 10, 5, 2":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [10, 5, 2]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 9, 3":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [9, 3]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 8, 4, 2":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [8, 4, 2]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 7":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [7]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 6, 3":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [6, 3]))
             elif find_chonk_size(str(currentId)) == "Divisible by 5":
-                repeats = repeats + repeats_in_chonks(currentId, 5)
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [5]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 4, 2":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [4, 2]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 3":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [3]))
+            elif find_chonk_size(str(currentId)) == "Divisible by 2":
+                part2repeats = part2repeats + \
+                    incrementValidIds(repeats_in_chonks(currentId, [2]))
             currentId += 1
         i += 1
         # valid = divisible by 101, 1001, 10001, 100001, etc
 
-    return repeats
+    return part2repeats
 
 
 print("day 2 part 2 answer: ", find_repeat_chonks(formatted))
